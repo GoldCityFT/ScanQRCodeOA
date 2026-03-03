@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Information</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body{
+      font-family:sans-serif; 
+      margin:0; 
+      padding:20px; 
+      background:#f0f0f0;
+      display:flex; 
+      flex-direction:column; 
+      align-items:center;
+      }
+    h2{ margin:0 0 16px; 
+       font-size:2rem; 
+       text-align:center; 
+      }
+    form{
+      display:none; 
+      background:#fff; 
+      padding:20px; 
+      border-radius:10px;
+      max-width:420px; 
+      width:100%; 
+      box-shadow:0 5px 10px rgba(0,0,0,.1);
+      box-sizing:border-box;
+      }
+    label{ display:block; 
+          margin-top:14px;
+          font-weight:bold; 
+          }
+    input{
+      width:100%;
+      padding:10px; 
+      margin-top:6px;
+      border-radius:6px;
+      border:1px solid #ccc; 
+      font-size:1rem; 
+      box-sizing:border-box;
+       }
+    button{
+      margin-top:18px; 
+      width:100%; 
+      padding:12px;
+      background:#00C300;
+      border:none; 
+      border-radius:6px; 
+      color:#fff; 
+      font-size:1rem; 
+      cursor:pointer;
+      }
+    button:hover{ background:#009f2b; }
+
+    #loadingModal{
+      display:flex; 
+      position:fixed; 
+      inset:0; 
+      background:rgba(0,0,0,.5);
+      justify-content:center; 
+      align-items:center; 
+      z-index:2000;
+    }
+    #loadingModal > div{
+      background:#fff; 
+      padding:18px; 
+      border-radius:10px;
+      text-align:center;
+      width:90%; 
+      max-width:320px;
+      box-sizing:border-box;
+    }
+
+    #modal{
+      display:none; 
+      position:fixed;
+      inset:0; 
+      background:rgba(0,0,0,.7);
+      justify-content:center; 
+      align-items:center; 
+      z-index:2100;
+    }
+    #modal > div{
+      background:#fff; 
+      padding:18px; 
+      border-radius:10px;
+      text-align:center;
+      width:90%; max-width:320px; 
+      box-sizing:border-box;
+    }
+  </style>
+</head>
+<body>
+  <h2>กรอกข้อมูลเพื่อรับส่วนลด</h2>
+
+  <form id="surveyForm"
+    action="https://script.google.com/macros/s/AKfycbwOiqUypcq2ktLvTxfomqKEl0VynXtZiyaLww2nLpUPwkf8pmJMpYABa2iVQBKmocYNZQ/exec"
+    method="POST"
+    target="hidden_iframe">
+
+    
+    <!-- Security -->
+  
+    <input type="hidden" id="UserId" name="UserId" />
+    <input type="hidden" id="IdToken" name="IdToken" />
+
+    <!-- 1 Tracking -->
+    <label>รหัสหน้ากล่องพัสดุ (Tracking No.)</label>
+    <input type="text" id="Tracking" name="Tracking" required placeholder="ต้องระบุ เช่น TH22222224GF" />
+
+    <!-- 2 จังหวัด (map ไป Location เพื่อไม่แก้ App Script.) -->
+    <label>จังหวัด</label>
+    <input
+      type="text"
+      id="Province"
+      name="Location"
+      list="provinceList"
+      required
+      placeholder="พิมพ์เพื่อค้นหา เช่น กรุงเทพมหานคร"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="none"
+    />
+    <datalist id="provinceList">
+      <option value="กระบี่"></option>
+      <option value="กรุงเทพมหานคร"></option>
+      <option value="กาญจนบุรี"></option>
+      <option value="กาฬสินธุ์"></option>
+      <option value="กำแพงเพชร"></option>
+      <option value="ขอนแก่น"></option>
+      <option value="จันทบุรี"></option>
+      <option value="ฉะเชิงเทรา"></option>
+      <option value="ชลบุรี"></option>
+      <option value="ชัยนาท"></option>
+      <option value="ชัยภูมิ"></option>
+      <option value="ชุมพร"></option>
+      <option value="เชียงราย"></option>
+      <option value="เชียงใหม่"></option>
+      <option value="ตรัง"></option>
+      <option value="ตราด"></option>
+      <option value="ตาก"></option>
+      <option value="นครนายก"></option>
+      <option value="นครปฐม"></option>
+      <option value="นครพนม"></option>
+      <option value="นครราชสีมา"></option>
+      <option value="นครศรีธรรมราช"></option>
+      <option value="นครสวรรค์"></option>
+      <option value="นนทบุรี"></option>
+      <option value="นราธิวาส"></option>
+      <option value="น่าน"></option>
+      <option value="บึงกาฬ"></option>
+      <option value="บุรีรัมย์"></option>
+      <option value="ปทุมธานี"></option>
+      <option value="ประจวบคีรีขันธ์"></option>
+      <option value="ปราจีนบุรี"></option>
+      <option value="ปัตตานี"></option>
+      <option value="พระนครศรีอยุธยา"></option>
+      <option value="พะเยา"></option>
+      <option value="พังงา"></option>
+      <option value="พัทลุง"></option>
+      <option value="พิจิตร"></option>
+      <option value="พิษณุโลก"></option>
+      <option value="เพชรบุรี"></option>
+      <option value="เพชรบูรณ์"></option>
+      <option value="แพร่"></option>
+      <option value="ภูเก็ต"></option>
+      <option value="มหาสารคาม"></option>
+      <option value="มุกดาหาร"></option>
+      <option value="แม่ฮ่องสอน"></option>
+      <option value="ยะลา"></option>
+      <option value="ยโสธร"></option>
+      <option value="ร้อยเอ็ด"></option>
+      <option value="ระนอง"></option>
+      <option value="ระยอง"></option>
+      <option value="ราชบุรี"></option>
+      <option value="ลพบุรี"></option>
+      <option value="ลำปาง"></option>
+      <option value="ลำพูน"></option>
+      <option value="เลย"></option>
+      <option value="ศรีสะเกษ"></option>
+      <option value="สกลนคร"></option>
+      <option value="สงขลา"></option>
+      <option value="สตูล"></option>
+      <option value="สมุทรปราการ"></option>
+      <option value="สมุทรสงคราม"></option>
+      <option value="สมุทรสาคร"></option>
+      <option value="สระแก้ว"></option>
+      <option value="สระบุรี"></option>
+      <option value="สิงห์บุรี"></option>
+      <option value="สุโขทัย"></option>
+      <option value="สุพรรณบุรี"></option>
+      <option value="สุราษฎร์ธานี"></option>
+      <option value="สุรินทร์"></option>
+      <option value="หนองคาย"></option>
+      <option value="หนองบัวลำภู"></option>
+      <option value="อ่างทอง"></option>
+      <option value="อำนาจเจริญ"></option>
+      <option value="อุดรธานี"></option>
+      <option value="อุตรดิตถ์"></option>
+      <option value="อุทัยธานี"></option>
+      <option value="อุบลราชธานี"></option>
+    </datalist>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
+
+  <div id="loadingModal"><div><p>กรุณารอสักครู่...</p></div></div>
+
+  <div id="modal">
+    <div>
+      <p id="modalText">ข้อความ</p>
+      <button id="okBtn">OK</button>
+    </div>
+  </div>
+
+<script>
+let isSubmitted = false;
+
+const form = document.getElementById("surveyForm");
+const loadingModal = document.getElementById("loadingModal");
+const modal = document.getElementById("modal");
+const modalText = document.getElementById("modalText");
+const okBtn = document.getElementById("okBtn");
+
+function showModal(msg, onOk){
+  modalText.textContent = msg;
+  modal.style.display = "flex";
+  okBtn.onclick = () => {
+    modal.style.display = "none";
+    if(onOk) onOk();
+  };
+}
+
+async function main(){
+  try{
+    await liff.init({ liffId: "2008187346-LZW3ndvO" });
+    if(!liff.isLoggedIn()) return liff.login();
+
+    const profile = await liff.getProfile();
+    document.getElementById("UserId").value = profile.userId;
+
+    //  ดึง tracking จาก ScanQrcode3
+    const trackingCode = (sessionStorage.getItem("tracking") || "").trim();
+    document.getElementById("Tracking").value = trackingCode;
+
+    const idToken = liff.getIDToken();
+    if(!idToken){
+      showModal("❌ ไม่พบ idToken โปรดลองใหม่");
+     return;
+    }
+    document.getElementById("IdToken").value = idToken;
+    sessionStorage.setItem("uid", profile.userId);
+    sessionStorage.setItem("idt", idToken);
+
+    // กันหลุด (จริง ๆ บังคับใน ScanQrcode3 แล้ว แต่กันเหนียว)
+    if(!trackingCode){
+      showModal("❌ ไม่พบรหัสพัสดุ กรุณากลับไปสแกน/กรอกก่อน", () => {
+        window.location.href = "ScanQrcode3.html";
+      });
+      return;
+    }
+  }catch(err){
+    console.error(err);
+    showModal("เกิดข้อผิดพลาดในการโหลดหน้า โปรดลองใหม่อีกครั้ง");
+    return;
+  }finally{
+    loadingModal.style.display = "none";
+    form.style.display = "block";
+  }
+}
+
+main();
+
+// submit = commit จริง
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const tracking = document.getElementById("Tracking").value.trim();
+  const province = document.getElementById("Province").value.trim();
+
+  if(!tracking){
+    showModal("❌ กรุณาระบุ Tracking No.");
+    return;
+  }
+  if(tracking.length < 10){
+    showModal("❌ รหัสพัสดุไม่ถูกต้อง");
+    return;
+  }
+  if(!province){
+    showModal("❌ กรุณาระบุจังหวัด");
+    return;
+  }
+
+  isSubmitted = true;
+  form.submit();
+
+  showModal("บันทึกสำเร็จ!", () => {
+  sessionStorage.removeItem("tracking");
+  setTimeout(() => liff.closeWindow(), 800);
+  });
+});
+
+const POST_URL = "https://script.google.com/macros/s/AKfycbwOiqUypcq2ktLvTxfomqKEl0VynXtZiyaLww2nLpUPwkf8pmJMpYABa2iVQBKmocYNZQ/exec";
+
+let beaconSent = false;
+
+function buildDraftBody(){
+  const uid = sessionStorage.getItem("uid") || document.getElementById("UserId").value || "";
+  const idt = sessionStorage.getItem("idt") || document.getElementById("IdToken").value || "";
+  const tracking = (document.getElementById("Tracking").value || "").trim();
+  const location = (document.getElementById("Province").value || "").trim();
+
+  const body = new URLSearchParams();
+  body.set("UserId", uid);
+  body.set("IdToken", idt);
+  body.set("Tracking", tracking);
+  body.set("Location", location);
+
+  return body; 
+}
+
+function sendDraftOnce(){
+  if (isSubmitted) return;
+  if (beaconSent) return;
+
+  const body = buildDraftBody();
+
+
+  beaconSent = true;
+  const ok = navigator.sendBeacon(POST_URL, body);
+  console.log("sendBeacon ok?", ok, Object.fromEntries(body.entries()));
+}
+
+window.addEventListener("pagehide", sendDraftOnce);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") sendDraftOnce();
+});
+  
+</script>
+</body>
+</html>
