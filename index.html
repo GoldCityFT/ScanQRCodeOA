@@ -3,7 +3,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
-  <title>Line Login Pages</title>
+  <title>Entering the QR code scanning page</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -33,7 +33,7 @@ p
   margin-bottom: 40px;
   }
   
-/* สำหรับมือถือเท่านั้น */
+/* สำหรับมือถือเท่านั้นห */
  @media (max-width: 768px) 
   {
       h1 { font-size: 2.5rem; }
@@ -44,8 +44,8 @@ p
 
 </head>
 <body>
-  <h1>ยินดีต้อนรับ! คุณลูกค้า</h1>
-  <p id="status">กำลังตรวจสอบ LINE login …</p>
+  <h1>กรุณารอสักครู่...</h1>
+  <p id="status">กำลังเตรียมหน้า ScanQrcode...</p>
   
 <script>
   const LIFF_ID  = "2009304109-dIuHHv2A";
@@ -81,11 +81,11 @@ p
   //core function เช็คว่า Login หรือยัง
   async function boot(){
     try{
-      setStatus("กำลังเริ่มระบบ…");
+      setStatus("กำลังเตรียมหน้าสแกน…");
       await liff.init({ liffId: LIFF_ID });
 
       if(!liff.isLoggedIn()){
-        setStatus("กำลังพาไปเข้าสู่ระบบ…");
+        setStatus("กำลังยืนยันตัวตน…");
         liff.login({ redirectUri: window.location.href });
         return;
       }
@@ -93,11 +93,11 @@ p
       // ทุกครั้งที่เข้าหน้านี้ = เริ่ม flow ใหม่
       startNewFlow();
 
-      setStatus("เข้าสู่ระบบแล้ว กำลังไปหน้าสแกน…");
+      setStatus("พร้อมแล้ว! กำลังไปหน้าสแกน…");
       window.location.replace(NEXT_URL);
     }catch(err){
       console.error("LIFF init error:", err);
-      alert("เกิดข้อผิดพลาดในการเริ่ม LIFF");
+      alert("เกิดข้อผิดพลาดในการเริ่มระบบ");
     }
   }
 
