@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Information</title>
+  <title>ขั้นตอนที่ 2 กรอกข้อมูลจังหวัด</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body{
@@ -53,8 +53,63 @@
       font-size:1rem; 
       cursor:pointer;
       }
+    
     button:hover{ background:#009f2b; }
+    /* ซ่อน UI แต่ยังอยู่ใน DOM + ยังส่งค่า */
+    .sr-only{
+      position:absolute !important;
+      width:1px !important;
+      height:1px !important;
+      padding:0 !important;
+      margin:-1px !important;
+      overflow:hidden !important;
+      clip:rect(0,0,0,0) !important;
+      white-space:nowrap !important;
+      border:0 !important;
+    }
 
+    .provinceWrap{
+    position:relative;
+    width:100%;
+  }
+
+  .provinceDropdown{
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    margin-top:6px;
+    
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+    
+    max-height:220px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    
+    z-index:3000;
+    -webkit-overflow-scrolling:touch;
+    }
+
+  .provinceItem{
+    padding:12px 14px;
+    font-size:1rem;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+  }
+
+  .provinceItem:last-child{
+    border-bottom:none;
+  }
+
+  .provinceItem:active,
+  .provinceItem:hover{
+    background:#f5f5f5;
+  }
+    
     #loadingModal{
       display:flex; 
       position:fixed; 
@@ -84,126 +139,111 @@
       z-index:2100;
     }
     #modal > div{
-      background:#fff; 
-      padding:18px; 
-      border-radius:10px;
+      background:#fff;
+      padding:40px;
+      border-radius:20px;
       text-align:center;
-      width:90%; max-width:320px; 
-      box-sizing:border-box;
+      width:90%;
+      max-width:420px;
+      box-shadow:0 8px 25px rgba(0,0,0,.5);
+    }
+
+    #modalText{
+      font-size:clamp(24px, 6vw, 34px);
+      font-weight:800;
+      margin:0 0 20px;
+    }
+
+    #modal button{
+      margin-top:0;
+      padding:16px;
+      font-size:clamp(18px, 4.5vw, 24px);
+      border-radius:14px;
+    }
+     /* Popup ยืนยันจังหวัด */
+    #confirmModal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      justify-content:center;
+      align-items:center;
+      z-index:2200;
+    }
+    #confirmModal > div{
+      background:#fff;
+      padding:28px;
+      border-radius:18px;
+      text-align:center;
+      width:90%;
+      max-width:360px;
+      box-shadow:0 8px 25px rgba(0,0,0,.45);
+    }
+    #confirmModal .provinceBox{
+      margin:14px 0 10px;
+      font-size:2rem;     /* ใหญ่ขึ้น */
+      font-weight:bold;
+      color:#111;
+      word-break:break-word;
+    }
+    #confirmModal p{
+    font-size:1.3rem;
+    font-weight:600;
+    }
+    .btnRow{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+    }
+    .btnRow button{
+      margin-top:0;
+      width:100%;
+    }
+    .btnGray{
+      background:#555;
+    }
+    .btnGray:hover{
+      background:#444;
     }
   </style>
 </head>
 <body>
-  <h2>กรอกข้อมูลเพื่อรับส่วนลด</h2>
+  <h2>คุณลูกค้าอยู่จังหวัดใด</h2>
 
   <form id="surveyForm"
     action="https://script.google.com/macros/s/AKfycbwSSxK4X0LmUgRkM-ZkRhcUXaClqnxq2Ou1qwJYIv_2k0iKBjZsit2UV8UV6yiJadvn/exec"
     method="POST"
     target="hidden_iframe">
 
-    
     <!-- Security -->
   
     <input type="hidden" id="UserId" name="UserId" />
     <input type="hidden" id="IdToken" name="IdToken" />
 
-    <!-- 1 Tracking -->
+    <!-- 1 Tracking ซ่อน แต่ยังส่งค่า -->
+    <label class="sr-only">รหัสหน้ากล่องพัสดุ (Tracking No.)</label>
+    <input class="sr-only" type="text" id="Tracking" name="Tracking" required />
+    <!--
     <label>รหัสหน้ากล่องพัสดุ (Tracking No.)</label>
-    <input type="text" id="Tracking" name="Tracking" required placeholder="ต้องระบุ เช่น TH22222224GF" />
+    <input type="text" id="Tracking" name="Tracking" required placeholder="ต้องระบุ เช่น TH22222224GF" /> 
+    -->
 
     <!-- 2 จังหวัด (map ไป Location เพื่อไม่แก้ App Script.) -->
-    <label>จังหวัด</label>
-    <input
+   <label>จังหวัด</label>
+    <div class="provinceWrap">
+  <input
       type="text"
       id="Province"
       name="Location"
-      list="provinceList"
       required
       placeholder="พิมพ์เพื่อค้นหา เช่น กรุงเทพมหานคร"
       autocomplete="off"
       autocorrect="off"
       autocapitalize="none"
     />
-    <datalist id="provinceList">
-      <option value="กระบี่"></option>
-      <option value="กรุงเทพมหานคร"></option>
-      <option value="กาญจนบุรี"></option>
-      <option value="กาฬสินธุ์"></option>
-      <option value="กำแพงเพชร"></option>
-      <option value="ขอนแก่น"></option>
-      <option value="จันทบุรี"></option>
-      <option value="ฉะเชิงเทรา"></option>
-      <option value="ชลบุรี"></option>
-      <option value="ชัยนาท"></option>
-      <option value="ชัยภูมิ"></option>
-      <option value="ชุมพร"></option>
-      <option value="เชียงราย"></option>
-      <option value="เชียงใหม่"></option>
-      <option value="ตรัง"></option>
-      <option value="ตราด"></option>
-      <option value="ตาก"></option>
-      <option value="นครนายก"></option>
-      <option value="นครปฐม"></option>
-      <option value="นครพนม"></option>
-      <option value="นครราชสีมา"></option>
-      <option value="นครศรีธรรมราช"></option>
-      <option value="นครสวรรค์"></option>
-      <option value="นนทบุรี"></option>
-      <option value="นราธิวาส"></option>
-      <option value="น่าน"></option>
-      <option value="บึงกาฬ"></option>
-      <option value="บุรีรัมย์"></option>
-      <option value="ปทุมธานี"></option>
-      <option value="ประจวบคีรีขันธ์"></option>
-      <option value="ปราจีนบุรี"></option>
-      <option value="ปัตตานี"></option>
-      <option value="พระนครศรีอยุธยา"></option>
-      <option value="พะเยา"></option>
-      <option value="พังงา"></option>
-      <option value="พัทลุง"></option>
-      <option value="พิจิตร"></option>
-      <option value="พิษณุโลก"></option>
-      <option value="เพชรบุรี"></option>
-      <option value="เพชรบูรณ์"></option>
-      <option value="แพร่"></option>
-      <option value="ภูเก็ต"></option>
-      <option value="มหาสารคาม"></option>
-      <option value="มุกดาหาร"></option>
-      <option value="แม่ฮ่องสอน"></option>
-      <option value="ยะลา"></option>
-      <option value="ยโสธร"></option>
-      <option value="ร้อยเอ็ด"></option>
-      <option value="ระนอง"></option>
-      <option value="ระยอง"></option>
-      <option value="ราชบุรี"></option>
-      <option value="ลพบุรี"></option>
-      <option value="ลำปาง"></option>
-      <option value="ลำพูน"></option>
-      <option value="เลย"></option>
-      <option value="ศรีสะเกษ"></option>
-      <option value="สกลนคร"></option>
-      <option value="สงขลา"></option>
-      <option value="สตูล"></option>
-      <option value="สมุทรปราการ"></option>
-      <option value="สมุทรสงคราม"></option>
-      <option value="สมุทรสาคร"></option>
-      <option value="สระแก้ว"></option>
-      <option value="สระบุรี"></option>
-      <option value="สิงห์บุรี"></option>
-      <option value="สุโขทัย"></option>
-      <option value="สุพรรณบุรี"></option>
-      <option value="สุราษฎร์ธานี"></option>
-      <option value="สุรินทร์"></option>
-      <option value="หนองคาย"></option>
-      <option value="หนองบัวลำภู"></option>
-      <option value="อ่างทอง"></option>
-      <option value="อำนาจเจริญ"></option>
-      <option value="อุดรธานี"></option>
-      <option value="อุตรดิตถ์"></option>
-      <option value="อุทัยธานี"></option>
-      <option value="อุบลราชธานี"></option>
-    </datalist>
-
+    <div id="provinceDropdown" class="provinceDropdown"></div>
+  </div>
+    
     <button type="submit">Submit</button>
   </form>
 
@@ -218,6 +258,18 @@
     </div>
   </div>
 
+<!--  Popup ยืนยันจังหวัด -->
+  <div id="confirmModal">
+    <div>
+      <p>จังหวัดที่คุณกรอกคือ</p>
+      <div class="provinceBox" id="confirmProvince">-</div>
+      <div class="btnRow">
+        <button id="confirmYes" type="button">ยืนยัน</button>
+        <button id="confirmNo"  type="button" class="btnGray">แก้ไข</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 let isSubmitted = false;
 
@@ -226,6 +278,11 @@ const loadingModal = document.getElementById("loadingModal");
 const modal = document.getElementById("modal");
 const modalText = document.getElementById("modalText");
 const okBtn = document.getElementById("okBtn");
+
+const confirmModal = document.getElementById("confirmModal");
+const confirmProvince = document.getElementById("confirmProvince");
+const confirmYes = document.getElementById("confirmYes");
+const confirmNo = document.getElementById("confirmNo");
 
 function showModal(msg, onOk){
   modalText.textContent = msg;
@@ -236,9 +293,95 @@ function showModal(msg, onOk){
   };
 }
 
+/** รายชื่อจังหวัดทั้งหมด */
+const provinceInput = document.getElementById("Province");
+const provinceDropdown = document.getElementById("provinceDropdown");  
+const PROVINCES = [
+  "กระบี่","กรุงเทพมหานคร","กาญจนบุรี","กาฬสินธุ์","กำแพงเพชร","ขอนแก่น","จันทบุรี",
+  "ฉะเชิงเทรา","ชลบุรี","ชัยนาท","ชัยภูมิ","ชุมพร","เชียงราย","เชียงใหม่","ตรัง","ตราด",
+  "ตาก","นครนายก","นครปฐม","นครพนม","นครราชสีมา","นครศรีธรรมราช","นครสวรรค์","นนทบุรี",
+  "นราธิวาส","น่าน","บึงกาฬ","บุรีรัมย์","ปทุมธานี","ประจวบคีรีขันธ์","ปราจีนบุรี","ปัตตานี",
+  "พระนครศรีอยุธยา","พะเยา","พังงา","พัทลุง","พิจิตร","พิษณุโลก","เพชรบุรี","เพชรบูรณ์",
+  "แพร่","ภูเก็ต","มหาสารคาม","มุกดาหาร","แม่ฮ่องสอน","ยะลา","ยโสธร","ร้อยเอ็ด","ระนอง",
+  "ระยอง","ราชบุรี","ลพบุรี","ลำปาง","ลำพูน","เลย","ศรีสะเกษ","สกลนคร","สงขลา","สตูล",
+  "สมุทรปราการ","สมุทรสงคราม","สมุทรสาคร","สระแก้ว","สระบุรี","สิงห์บุรี","สุโขทัย",
+  "สุพรรณบุรี","สุราษฎร์ธานี","สุรินทร์","หนองคาย","หนองบัวลำภู","อ่างทอง","อำนาจเจริญ",
+  "อุดรธานี","อุตรดิตถ์","อุทัยธานี","อุบลราชธานี"
+];
+
+
+
+function isValidProvinceExact(text){
+  const v = normalizeThai(text);
+  return PROVINCES.includes(v);
+}
+
+function renderProvinceDropdown(keyword = ""){
+  const q = normalizeThai(keyword);
+  let items = PROVINCES;
+
+  if(q){
+    items = PROVINCES.filter(p => p.includes(q));
+  }
+
+  if(items.length === 0){
+    provinceDropdown.innerHTML = `<div class="provinceItem">ไม่พบจังหวัด</div>`;
+    provinceDropdown.style.display = "block";
+    return;
+  }
+
+  provinceDropdown.innerHTML = items
+    .slice(0, 77)
+    .map(p => `<div class="provinceItem" data-value="${p}">${p}</div>`)
+    .join("");
+
+  provinceDropdown.style.display = "block";
+}
+
+function hideProvinceDropdown(){
+  provinceDropdown.style.display = "none";
+}
+
+provinceInput.addEventListener("focus", () => {
+  renderProvinceDropdown(provinceInput.value);
+  
+setTimeout(()=>{
+    provinceInput.scrollIntoView({
+      block:"center",
+      behavior:"smooth"
+    });
+  },200);
+});
+
+provinceInput.addEventListener("input", () => {
+  provinceInput.value = normalizeThai(provinceInput.value);
+  renderProvinceDropdown(provinceInput.value);
+});
+
+provinceDropdown.addEventListener("click", (e) => {
+  const item = e.target.closest(".provinceItem");
+  if(!item) return;
+
+  const value = item.dataset.value;
+  if(!value) return;
+
+  provinceInput.value = value;
+  hideProvinceDropdown();
+});
+
+document.addEventListener("click", (e) => {
+  if(!e.target.closest(".provinceWrap")){
+    hideProvinceDropdown();
+  }
+});
+
+  function normalizeThai(s){
+  return (s || "").replace(/\s+/g, " ").trim();
+}
+  
 async function main(){
   try{
-    await liff.init({ liffId: "2009304109-dIuHHv2A" });
+    await liff.init({ liffId: "2008187346-LZW3ndvO" });
     if(!liff.isLoggedIn()) return liff.login();
 
     const profile = await liff.getProfile();
@@ -259,7 +402,7 @@ async function main(){
 
     // กันหลุด (จริง ๆ บังคับใน ScanQrcode3 แล้ว แต่กันเหนียว)
     if(!trackingCode){
-      showModal("❌ ไม่พบรหัสพัสดุ กรุณากลับไปสแกน/กรอกก่อน", () => {
+      showModal("❌ ไม่พบข้อมูลรหัสพัสดุ กรุณากลับไปสแกน/กรอกก่อน", () => {
         window.location.href = "ScanQrcode3.html";
       });
       return;
@@ -276,15 +419,58 @@ async function main(){
 
 main();
 
-// submit = commit จริง
+provinceInput.addEventListener("blur", () => {
+  setTimeout(() => {
+    const value = normalizeThai(provinceInput.value);
+    provinceInput.value = value;
+
+    if(value.length < 2) return;
+
+    if(!isValidProvinceExact(value)){
+      showModal("❌ กรุณากรอกข้อมูลจังหวัดให้ถูกต้อง", focusProvince);
+    }
+  }, 150);
+});
+
+function focusProvince(){
+  const el = document.getElementById("Province");
+  // หน่วงนิดนึงกัน iOS/LIFF ไม่ยอมโฟกัสทันทีหลังปิด modal
+  setTimeout(() => {
+    el.focus();
+    // select มีบางเครื่องไม่รองรับหรือไม่ทำงาน ก็ไม่เป็นไร
+    if (typeof el.select === "function") el.select();
+  }, 120);
+}
+ 
+/* เปิด popup ยืนยันจังหวัด */
+function openConfirm(province){
+  confirmProvince.textContent = province;
+  confirmModal.style.display = "flex";
+}
+
+function closeConfirm(){
+  confirmModal.style.display = "none";
+}
+
+function doRealSubmit(){
+  isSubmitted = true;
+  form.submit();
+
+  showModal("บันทึกสำเร็จ!", () => {
+    sessionStorage.removeItem("tracking");
+    setTimeout(() => liff.closeWindow(), 800);
+  });
+}
+  
+// submit = ขอ confirm ก่อนค่อย submit จริง
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const tracking = document.getElementById("Tracking").value.trim();
-  const province = document.getElementById("Province").value.trim();
+  const province = normalizeThai(document.getElementById("Province").value);
 
   if(!tracking){
-    showModal("❌ กรุณาระบุ Tracking No.");
+    showModal("❌ ไม่พบข้อมูลหน้ากล่องพัสดุ กรุณาสแกน/กรอกข้อมูลก่อน");
     return;
   }
   if(tracking.length < 10){
@@ -295,15 +481,25 @@ form.addEventListener("submit", (e) => {
     showModal("❌ กรุณาระบุจังหวัด");
     return;
   }
-
-  isSubmitted = true;
-  form.submit();
-
-  showModal("บันทึกสำเร็จ!", () => {
-  sessionStorage.removeItem("tracking");
-  setTimeout(() => liff.closeWindow(), 800);
-  });
+if(!isValidProvinceExact(province)){
+  showModal("❌ กรุณากรอกข้อมูลจังหวัดให้ตรงกับรายการที่กำหนดเท่านั้น", focusProvince);
+  return;
+}
+    //  ผ่านแล้ว: ให้ผู้ใช้ยืนยันก่อน
+  openConfirm(province);
 });
+
+confirmYes.onclick = () => {
+  closeConfirm();
+  doRealSubmit();
+};
+
+confirmNo.onclick = () => {
+  closeConfirm();
+  const el = document.getElementById("Province");
+  el.focus();
+  el.select?.();
+};
 
 const POST_URL = "https://script.google.com/macros/s/AKfycbwSSxK4X0LmUgRkM-ZkRhcUXaClqnxq2Ou1qwJYIv_2k0iKBjZsit2UV8UV6yiJadvn/exec";
 
@@ -313,7 +509,7 @@ function buildDraftBody(){
   const uid = sessionStorage.getItem("uid") || document.getElementById("UserId").value || "";
   const idt = sessionStorage.getItem("idt") || document.getElementById("IdToken").value || "";
   const tracking = (document.getElementById("Tracking").value || "").trim();
-  const location = (document.getElementById("Province").value || "").trim();
+  const location = normalizeThai(document.getElementById("Province").value);
 
   const body = new URLSearchParams();
   body.set("UserId", uid);
@@ -329,8 +525,7 @@ function sendDraftOnce(){
   if (beaconSent) return;
 
   const body = buildDraftBody();
-
-
+  
   beaconSent = true;
   const ok = navigator.sendBeacon(POST_URL, body);
   console.log("sendBeacon ok?", ok, Object.fromEntries(body.entries()));
