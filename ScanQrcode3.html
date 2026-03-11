@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8">
-<title>สแกน QR Code</title>
+<title>ขั้นตอนที่ 1 สแกน QR Code</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <style>
 /* =========================
@@ -107,7 +107,7 @@ html, body {
 
 #manualInput input {
   padding: 12px;
-  margin-top: 8px;
+  margin-top: 0px;   /* เดิม 8px -> 0 */
 
   border-radius: 10px;
   border: 2px solid #ccc;
@@ -116,8 +116,16 @@ html, body {
   width: 100%;
   box-sizing: border-box;
   text-align: center;
+  text-transform: uppercase;   /* แสดงเป็นตัวใหญ่ */
 }
-
+   
+#manualHint{
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 0 0 4px;   /* ล่างชิด */
+}
+   
 #manualSubmit {
   padding: 12px;
   border: none;
@@ -175,7 +183,7 @@ html, body {
 <body>
   <div id="reader"></div>
   <div id="overlay"></div>
-  <div id="message">สแกน QR Code ของคุณเป็นแนวตั้ง</div>
+  <div id="message">หมุนหน้าจอเป็นแนวตั้งเพื่อสแกน</div>
 
   <div id="popupAlert">
     <div id="popupAlertContent">
@@ -184,9 +192,7 @@ html, body {
   </div>
 
   <div id="manualInput">
-    <p style="color:white; font-size:1.2rem; margin-bottom:10px; text-align:center;">
-      กรอกรหัสพัสดุด้านล่าง (ถ้าไม่สะดวกสแกน)
-    </p>
+    <p id="manualHint">กรอกรหัสพัสดุด้านล่าง (หากไม่สะดวกสแกน)</p>
     <input type="text" id="manualCode" placeholder="กรอกข้อมูลด้วยตัวเอง">
     <div style="display:flex; 
        gap:10px; 
@@ -330,9 +336,18 @@ document.getElementById('manualCode').addEventListener('focus', async () => {
   document.getElementById('message').style.display = 'none';
 });
    // กัน TTL หมดตอนพิมพ์นาน ๆ
-document.getElementById('manualCode').addEventListener('input', () => {
+document.getElementById('manualCode').addEventListener('input', (e) => {
   touchFlow();
-});
+  // บังคับตัวอักษรอังกฤษเป็นพิมพ์ใหญ่ (ตัวเลข/ขีดไม่กระทบ)
+  const el = e.target;
+  const pos = el.selectionStart;
+  const upper = el.value.toUpperCase();
+  if(el.value !== upper){
+    el.value = upper;
+    // พยายามคงตำแหน่งเคอร์เซอร์ไว้
+    if(pos !== null) el.setSelectionRange(pos, pos);
+  }
+});;
 
 document.getElementById('btnBackToCamera').onclick = async () => {
   if(!guardFlowOrRestart()) return;
