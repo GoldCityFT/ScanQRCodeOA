@@ -382,34 +382,30 @@ document.addEventListener("click", (e) => {
   
 async function main(){
   try{
-    await liff.init({ liffId: "2009304109-dIuHHv2A" });
-    if(!liff.isLoggedIn()) return liff.login();
-
-    const profile = await liff.getProfile();
-    document.getElementById("UserId").value = profile.userId;
-
-    //  ดึง tracking จาก ScanQrcode3
+    const userId = sessionStorage.getItem("uid") || "";
+    const idToken = sessionStorage.getItem("idt") || "";
     const trackingCode = (sessionStorage.getItem("tracking") || "").trim();
-    document.getElementById("Tracking").value = trackingCode;
 
-    const idToken = liff.getIDToken();
-    if(!idToken){
-      showModal("❌ ไม่พบ idToken โปรดลองใหม่");
-     return;
+    if(!userId || !idToken){
+      showModal("❌ ไม่พบข้อมูลการเข้าสู่ระบบ กรุณาเริ่มใหม่อีกครั้ง", () => {
+        window.location.href = "index.html";
+      });
+      return;
     }
-    document.getElementById("IdToken").value = idToken;
-    sessionStorage.setItem("uid", profile.userId);
-    sessionStorage.setItem("idt", idToken);
 
-    // กันหลุด (จริง ๆ บังคับใน ScanQrcode3 แล้ว แต่กันเหนียว)
     if(!trackingCode){
       showModal("❌ ไม่พบข้อมูลรหัสพัสดุ กรุณากลับไปสแกน/กรอกก่อน", () => {
         window.location.href = "ScanQrcode3.html";
       });
       return;
     }
+
+    document.getElementById("UserId").value = userId;
+    document.getElementById("IdToken").value = idToken;
+    document.getElementById("Tracking").value = trackingCode;
+
   }catch(err){
-    console.error(err);
+    console.error("Form3 main error:", err);
     showModal("เกิดข้อผิดพลาดในการโหลดหน้า โปรดลองใหม่อีกครั้ง");
     return;
   }finally{
@@ -460,7 +456,6 @@ function doRealSubmit(){
   showModal("เราได้รับการยืนยันการรับประกันสินค้าจากคุณแล้ว", () => {
     sessionStorage.removeItem("tracking");
     window.location.href = BENEFIT_URL;
-  setTimeout(() => liff.closeWindow(), 800);
   });
 }
 
