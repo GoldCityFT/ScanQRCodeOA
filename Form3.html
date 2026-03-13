@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ขั้นตอนที่ 2 กรอกข้อมูลจังหวัด</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
+   <style>
     body{
       font-family:sans-serif; 
       margin:0; 
@@ -140,44 +140,26 @@
     }
     #modal > div{
       background:#fff;
-      padding:32px 24px;
-      border-radius:22px;
+      padding:40px;
+      border-radius:20px;
       text-align:center;
       width:90%;
-      max-width:400px;
-      box-shadow:0 14px 36px rgba(0,0,0,.28);;
+      max-width:420px;
+      box-shadow:0 8px 25px rgba(0,0,0,.5);
     }
 
     #modalText{
-      font-size:clamp(18px, 4.8vw, 26px);
-      line-height:1.45;
-      font-weight:700;
-      margin:0 0 24px;
-      color:#111;
+      font-size:clamp(24px, 6vw, 34px);
+      font-weight:800;
+      margin:0 0 20px;
     }
 
     #modal button{
       margin-top:0;
-      padding:15px 18px;
-      font-size:clamp(18px, 4.2vw, 22px);
-      font-weight:700;
-      border-radius:16px;
-      border:none;
-      background:linear-gradient(180deg, #10d410 0%, #00b900 100%);
-      color:#fff;
-      box-shadow:0 6px 0 #009a00, 0 10px 20px rgba(0,195,0,.25);
-      transform:translateY(0);
-      transition:transform .08s ease, box-shadow .08s ease, filter .15s ease;
+      padding:16px;
+      font-size:clamp(18px, 4.5vw, 24px);
+      border-radius:14px;
     }
-    #modal button:hover{
-      filter:brightness(1.03);
-    }
-
-    #modal button:active{
-      transform:translateY(4px);
-      box-shadow:0 2px 0 #009a00, 0 6px 12px rgba(0,195,0,.18);
-    }
-
      /* Popup ยืนยันจังหวัด */
     #confirmModal{
       display:none;
