@@ -459,12 +459,9 @@ function doRealSubmit(){
 
   showModal("เราได้รับการยืนยันการรับประกันสินค้าจากคุณแล้ว", () => {
     sessionStorage.removeItem("tracking");
-
-    // เปิดลิงก์สิทธิประโยชน์ก่อน
-    if (BENEFIT_URL && BENEFIT_URL !== "https://line.me/R/oaMessage/@269mmdto/?CRM") {
-      window.location.href = BENEFIT_URL;
-      return;
-    }
+    window.location.href = BENEFIT_URL;
+  });
+}
 
     // ถ้ายังไม่ได้ใส่ลิงก์จริง ค่อยปิด LIFF แบบเดิม
     setTimeout(() => liff.closeWindow(), 800);
