@@ -6,251 +6,206 @@
   <title>ขั้นตอนที่ 2 กรอกข้อมูลจังหวัด</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
    <style>
-ต้องกลับไปเริ่มใหม่แล้วแหละ คุณทำไม่ตรงที่ฉันบอกเลย
-<style>
-body{
-  font-family:sans-serif; 
-  margin:0; 
-  padding:20px; 
-  background:#f0f0f0;
-  display:flex; 
-  flex-direction:column; 
-  align-items:center;
-}
+    body{
+      font-family:sans-serif; 
+      margin:0; 
+      padding:20px; 
+      background:#f0f0f0;
+      display:flex; 
+      flex-direction:column; 
+      align-items:center;
+      }
+    h2{ margin:0 0 16px; 
+       font-size:2rem; 
+       text-align:center; 
+      }
+    form{
+      display:none; 
+      background:#fff; 
+      padding:20px; 
+      border-radius:10px;
+      max-width:420px; 
+      width:100%; 
+      box-shadow:0 5px 10px rgba(0,0,0,.1);
+      box-sizing:border-box;
+      }
+    label{ display:block; 
+          margin-top:14px;
+          font-weight:bold; 
+          }
+    input{
+      width:100%;
+      padding:10px; 
+      margin-top:6px;
+      border-radius:6px;
+      border:1px solid #ccc; 
+      font-size:1rem; 
+      box-sizing:border-box;
+       }
+    button{
+      margin-top:18px; 
+      width:100%; 
+      padding:12px;
+      background:#00C300;
+      border:none; 
+      border-radius:6px; 
+      color:#fff; 
+      font-size:1rem; 
+      cursor:pointer;
+      }
+    
+    button:hover{ background:#009f2b; }
+    /* ซ่อน UI แต่ยังอยู่ใน DOM + ยังส่งค่า */
+    .sr-only{
+      position:absolute !important;
+      width:1px !important;
+      height:1px !important;
+      padding:0 !important;
+      margin:-1px !important;
+      overflow:hidden !important;
+      clip:rect(0,0,0,0) !important;
+      white-space:nowrap !important;
+      border:0 !important;
+    }
 
-h2{ 
-  margin:0 0 16px; 
-  font-size:2rem; 
-  text-align:center; 
-}
+    .provinceWrap{
+    position:relative;
+    width:100%;
+  }
 
-form{
-  display:none; 
-  background:#fff; 
-  padding:20px; 
-  border-radius:10px;
-  max-width:420px; 
-  width:100%; 
-  box-shadow:0 5px 10px rgba(0,0,0,.1);
-  box-sizing:border-box;
-}
+  .provinceDropdown{
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    margin-top:6px;
+    
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+    
+    max-height:220px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    
+    z-index:3000;
+    -webkit-overflow-scrolling:touch;
+    }
 
-label{ 
-  display:block; 
-  margin-top:14px;
-  font-weight:bold; 
-}
+  .provinceItem{
+    padding:12px 14px;
+    font-size:1rem;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+  }
 
-input{
-  width:100%;
-  padding:10px; 
-  margin-top:6px;
-  border-radius:6px;
-  border:1px solid #ccc; 
-  font-size:1rem; 
-  box-sizing:border-box;
-}
+  .provinceItem:last-child{
+    border-bottom:none;
+  }
 
-/* ปุ่ม */
-button{
-  margin-top:18px; 
-  width:100%; 
-  padding:12px;
-  background:#00C300;
-  border:none; 
-  border-radius:6px; 
-  color:#fff; 
-  font-size:1rem; 
-  cursor:pointer;
+  .provinceItem:active,
+  .provinceItem:hover{
+    background:#f5f5f5;
+  }
+    
+    #loadingModal{
+      display:flex; 
+      position:fixed; 
+      inset:0; 
+      background:rgba(0,0,0,.5);
+      justify-content:center; 
+      align-items:center; 
+      z-index:2000;
+    }
+    #loadingModal > div{
+      background:#fff; 
+      padding:18px; 
+      border-radius:10px;
+      text-align:center;
+      width:90%; 
+      max-width:320px;
+      box-sizing:border-box;
+    }
 
-  /* เพิ่ม animation ตอนกด */
-  transition:transform .06s ease;
-}
+    #modal{
+      display:none; 
+      position:fixed;
+      inset:0; 
+      background:rgba(0,0,0,.7);
+      justify-content:center; 
+      align-items:center; 
+      z-index:2100;
+    }
+    #modal > div{
+      background:#fff;
+      padding:40px;
+      border-radius:20px;
+      text-align:center;
+      width:90%;
+      max-width:420px;
+      box-shadow:0 8px 25px rgba(0,0,0,.5);
+    }
 
-button:hover{
-  background:#009f2b;
-}
+    #modalText{
+      font-size:clamp(24px, 6vw, 34px);
+      font-weight:800;
+      margin:0 0 20px;
+    }
 
-/* ยุบเฉพาะตอนกด */
-button:active{
-  transform:scale(0.98);
-}
-
-button:focus{
-  outline:none;
-}
-
-/* ซ่อน UI แต่ยังอยู่ใน DOM + ยังส่งค่า */
-.sr-only{
-  position:absolute !important;
-  width:1px !important;
-  height:1px !important;
-  padding:0 !important;
-  margin:-1px !important;
-  overflow:hidden !important;
-  clip:rect(0,0,0,0) !important;
-  white-space:nowrap !important;
-  border:0 !important;
-}
-
-/* dropdown จังหวัด */
-
-.provinceWrap{
-  position:relative;
-  width:100%;
-}
-
-.provinceDropdown{
-  display:none;
-  position:absolute;
-  top:100%;
-  left:0;
-  right:0;
-  margin-top:6px;
-  
-  background:#fff;
-  border:1px solid #ccc;
-  border-radius:10px;
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
-  
-  max-height:220px;
-  overflow-y:auto;
-  overscroll-behavior:contain;
-  
-  z-index:3000;
-  -webkit-overflow-scrolling:touch;
-}
-
-.provinceItem{
-  padding:12px 14px;
-  font-size:1rem;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-
-.provinceItem:last-child{
-  border-bottom:none;
-}
-
-.provinceItem:active,
-.provinceItem:hover{
-  background:#f5f5f5;
-}
-
-/* loading */
-
-#loadingModal{
-  display:flex; 
-  position:fixed; 
-  inset:0; 
-  background:rgba(0,0,0,.5);
-  justify-content:center; 
-  align-items:center; 
-  z-index:2000;
-}
-
-#loadingModal > div{
-  background:#fff; 
-  padding:18px; 
-  border-radius:10px;
-  text-align:center;
-  width:90%; 
-  max-width:320px;
-  box-sizing:border-box;
-}
-
-/* modal */
-
-#modal{
-  display:none; 
-  position:fixed;
-  inset:0; 
-  background:rgba(0,0,0,.7);
-  justify-content:center; 
-  align-items:center; 
-  z-index:2100;
-}
-
-#modal > div{
-  background:#fff;
-  padding:40px;
-  border-radius:20px;
-  text-align:center;
-  width:90%;
-  max-width:420px;
-  box-shadow:0 8px 25px rgba(0,0,0,.5);
-}
-
-/* ลดขนาดข้อความ popup */
-
-#modalText{
-  font-size:clamp(18px, 4.6vw, 24px);
-  font-weight:700;
-  line-height:1.45;
-  margin:0 0 20px;
-}
-
-#modal button{
-  margin-top:0;
-  padding:16px;
-  font-size:clamp(18px, 4.5vw, 24px);
-  border-radius:14px;
-}
-
-/* confirm modal */
-
-#confirmModal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  justify-content:center;
-  align-items:center;
-  z-index:2200;
-}
-
-#confirmModal > div{
-  background:#fff;
-  padding:28px;
-  border-radius:18px;
-  text-align:center;
-  width:90%;
-  max-width:360px;
-  box-shadow:0 8px 25px rgba(0,0,0,.45);
-}
-
-#confirmModal .provinceBox{
-  margin:14px 0 10px;
-  font-size:2rem;
-  font-weight:bold;
-  color:#111;
-  word-break:break-word;
-}
-
-#confirmModal p{
-  font-size:1.3rem;
-  font-weight:600;
-}
-
-.btnRow{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
-
-.btnRow button{
-  margin-top:0;
-  width:100%;
-}
-
-.btnGray{
-  background:#555;
-}
-
-.btnGray:hover{
-  background:#444;
-}
-</style>
+    #modal button{
+      margin-top:0;
+      padding:16px;
+      font-size:clamp(18px, 4.5vw, 24px);
+      border-radius:14px;
+    }
+     /* Popup ยืนยันจังหวัด */
+    #confirmModal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      justify-content:center;
+      align-items:center;
+      z-index:2200;
+    }
+    #confirmModal > div{
+      background:#fff;
+      padding:28px;
+      border-radius:18px;
+      text-align:center;
+      width:90%;
+      max-width:360px;
+      box-shadow:0 8px 25px rgba(0,0,0,.45);
+    }
+    #confirmModal .provinceBox{
+      margin:14px 0 10px;
+      font-size:2rem;     /* ใหญ่ขึ้น */
+      font-weight:bold;
+      color:#111;
+      word-break:break-word;
+    }
+    #confirmModal p{
+    font-size:1.3rem;
+    font-weight:600;
+    }
+    .btnRow{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+    }
+    .btnRow button{
+      margin-top:0;
+      width:100%;
+    }
+    .btnGray{
+      background:#555;
+    }
+    .btnGray:hover{
+      background:#444;
+    }
+  </style>
 </head>
 <body>
   <h2>คุณลูกค้าอยู่จังหวัดใด</h2>
