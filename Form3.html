@@ -382,35 +382,25 @@ document.addEventListener("click", (e) => {
   
 async function main(){
   try{
-    await liff.init({ liffId: "2009304109-dIuHHv2A" });
-    if(!liff.isLoggedIn()) return liff.login();
-
-    const profile = await liff.getProfile();
-    document.getElementById("UserId").value = profile.userId;
-
-    //  ดึง tracking จาก ScanQrcode3
     const trackingCode = (sessionStorage.getItem("tracking") || "").trim();
-    document.getElementById("Tracking").value = trackingCode;
+    const uid = (sessionStorage.getItem("uid") || "").trim();
+    const idt = (sessionStorage.getItem("idt") || "").trim();
 
-    const idToken = liff.getIDToken();
-    if(!idToken){
-      showModal("❌ ไม่พบ idToken โปรดลองใหม่");
-     return;
-    }
-    document.getElementById("IdToken").value = idToken;
-    sessionStorage.setItem("uid", profile.userId);
-    sessionStorage.setItem("idt", idToken);
+    const debugText =
+      "tracking = " + (trackingCode || "[ว่าง]") +
+      "\nuid = " + (uid || "[ว่าง]") +
+      "\nidt = " + (idt ? "[มีค่า]" : "[ว่าง]");
 
-    // กันหลุด (จริง ๆ บังคับใน ScanQrcode3 แล้ว แต่กันเหนียว)
-    if(!trackingCode){
-      showModal("❌ ไม่พบข้อมูลรหัสพัสดุ กรุณากลับไปสแกน/กรอกก่อน", () => {
-        window.location.href = "ScanQrcode3.html";
-      });
-      return;
+    document.querySelector("#loadingModal p").textContent = debugText;
+    showModal(debugText);
+
+    if(trackingCode){
+      document.getElementById("Tracking").value = trackingCode;
     }
+
   }catch(err){
-    console.error(err);
-    showModal("เกิดข้อผิดพลาดในการโหลดหน้า โปรดลองใหม่อีกครั้ง");
+    console.error("Form3 main error:", err);
+    showModal("DEBUG ERROR: " + err.message);
     return;
   }finally{
     loadingModal.style.display = "none";
