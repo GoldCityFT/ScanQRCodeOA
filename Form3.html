@@ -149,8 +149,9 @@
     }
 
     #modalText{
-      font-size:clamp(24px, 6vw, 34px);
-      font-weight:800;
+      font-size:clamp(18px, 4.6vw, 24px);
+      font-weight:700;
+      line-height:1.45;
       margin:0 0 20px;
     }
 
@@ -285,12 +286,14 @@ const confirmProvince = document.getElementById("confirmProvince");
 const confirmYes = document.getElementById("confirmYes");
 const confirmNo = document.getElementById("confirmNo");
 
-function showModal(msg, onOk){
+function showModal(msg, onOk, btnText = "OK"){
   modalText.textContent = msg;
+  okBtn.textContent = btnText;
   modal.style.display = "flex";
+
   okBtn.onclick = () => {
     modal.style.display = "none";
-    if(onOk) onOk();
+    if (typeof onOk === "function") onOk();
   };
 }
 
@@ -398,7 +401,7 @@ async function main(){
 
     const idToken = liff.getIDToken();
     if(!idToken){
-      showModal("❌ ไม่พบ idToken โปรดลองใหม่");
+      showModal("❌ ไม่พบ idToken โปรดลองใหม่", null, "OK");
      return;
     }
     document.getElementById("IdToken").value = idToken;
@@ -409,12 +412,12 @@ async function main(){
     if(!trackingCode){
       showModal("❌ ไม่พบข้อมูลรหัสพัสดุ กรุณากลับไปสแกน/กรอกก่อน", () => {
         window.location.href = "ScanQrcode3.html";
-      });
+      }, "ตกลง");
       return;
     }
   }catch(err){
     console.error(err);
-    showModal("เกิดข้อผิดพลาดในการโหลดหน้า โปรดลองใหม่อีกครั้ง");
+    showModal("เกิดข้อผิดพลาดในการโหลดหน้า โปรดลองใหม่อีกครั้ง", null, "OK");
     return;
   }finally{
     loadingModal.style.display = "none";
@@ -432,7 +435,7 @@ provinceInput.addEventListener("blur", () => {
     if(value.length < 2) return;
 
     if(!isValidProvinceExact(value)){
-      showModal("❌ กรุณากรอกข้อมูลจังหวัดให้ถูกต้อง", focusProvince);
+      showModal("❌ กรุณากรอกข้อมูลจังหวัดให้ถูกต้อง", focusProvince, "OK");
     }
   }, 150);
 });
@@ -461,16 +464,20 @@ function doRealSubmit(){
   isSubmitted = true;
   form.submit();
 
-  showModal("เราได้รับการยืนยันการรับประกันสินค้าจากคุณแล้ว", () => {
-    sessionStorage.removeItem("tracking");
+  showModal(
+    "เราได้รับการยืนยันการรับประกันสินค้าจากคุณแล้ว",
+    () => {
+      sessionStorage.removeItem("tracking");
 
-    if (BENEFIT_URL) {
-      window.location.href = BENEFIT_URL;
-      return;
-    }
+      if (BENEFIT_URL) {
+        window.location.href = BENEFIT_URL;
+        return;
+      }
 
-    setTimeout(() => liff.closeWindow(), 300);
-  });
+      setTimeout(() => liff.closeWindow(), 300);
+    },
+    "กดรับสิทธิ์ประโยชน์"
+  );
 }
   
 // submit = ขอ confirm ก่อนค่อย submit จริง
@@ -481,19 +488,19 @@ form.addEventListener("submit", (e) => {
   const province = normalizeThai(document.getElementById("Province").value);
 
   if(!tracking){
-    showModal("❌ ไม่พบข้อมูลหน้ากล่องพัสดุ กรุณาสแกน/กรอกข้อมูลก่อน");
+    showModal("❌ ไม่พบข้อมูลหน้ากล่องพัสดุ กรุณาสแกน/กรอกข้อมูลก่อน", null, "OK");
     return;
   }
   if(tracking.length < 10){
-    showModal("❌ รหัสพัสดุไม่ถูกต้อง");
+    showModal("❌ รหัสพัสดุไม่ถูกต้อง", null, "OK");
     return;
   }
   if(!province){
-    showModal("❌ กรุณาระบุจังหวัด");
+    showModal("❌ กรุณาระบุจังหวัด", focusProvince, "OK");
     return;
   }
 if(!isValidProvinceExact(province)){
-  showModal("❌ กรุณากรอกข้อมูลจังหวัดให้ตรงกับรายการที่กำหนดเท่านั้น", focusProvince);
+  showModal("❌ กรุณากรอกข้อมูลจังหวัดให้ตรงกับรายการที่กำหนดเท่านั้น", focusProvince, "OK");
   return;
 }
     //  ผ่านแล้ว: ให้ผู้ใช้ยืนยันก่อน
