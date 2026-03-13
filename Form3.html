@@ -278,7 +278,7 @@ const loadingModal = document.getElementById("loadingModal");
 const modal = document.getElementById("modal");
 const modalText = document.getElementById("modalText");
 const okBtn = document.getElementById("okBtn");
-const BENEFIT_URL = "https://line.me/R/oaMessage/@269mmdto/?CRM";
+//const BENEFIT_URL = "https://line.me/R/oaMessage/@269mmdto/?CRM";
 
 const confirmModal = document.getElementById("confirmModal");
 const confirmProvince = document.getElementById("confirmProvince");
@@ -459,7 +459,8 @@ function doRealSubmit(){
 
   showModal("เราได้รับการยืนยันการรับประกันสินค้าจากคุณแล้ว", () => {
     sessionStorage.removeItem("tracking");
-    window.location.href = BENEFIT_URL;
+   // window.location.href = BENEFIT_URL;
+  setTimeout(() => liff.closeWindow(), 800);
   });
 }
 
