@@ -254,7 +254,7 @@
   <div id="modal">
     <div>
       <p id="modalText">ข้อความ</p>
-      <button id="okBtn">OK</button>
+      <button id="okBtn">กดรับสิทธิ์ประโยชน์</button>
     </div>
   </div>
 
@@ -278,6 +278,7 @@ const loadingModal = document.getElementById("loadingModal");
 const modal = document.getElementById("modal");
 const modalText = document.getElementById("modalText");
 const okBtn = document.getElementById("okBtn");
+const BENEFIT_URL = "https://line.me/R/oaMessage/@269mmdto/?CRM";
 
 const confirmModal = document.getElementById("confirmModal");
 const confirmProvince = document.getElementById("confirmProvince");
@@ -456,8 +457,16 @@ function doRealSubmit(){
   isSubmitted = true;
   form.submit();
 
-  showModal("บันทึกสำเร็จ!", () => {
+  showModal("เราได้รับการยืนยันการรับประกันสินค้าจากคุณแล้ว", () => {
     sessionStorage.removeItem("tracking");
+
+    // เปิดลิงก์สิทธิประโยชน์ก่อน
+    if (BENEFIT_URL && BENEFIT_URL !== "https://line.me/R/oaMessage/@269mmdto/?CRM") {
+      window.location.href = BENEFIT_URL;
+      return;
+    }
+
+    // ถ้ายังไม่ได้ใส่ลิงก์จริง ค่อยปิด LIFF แบบเดิม
     setTimeout(() => liff.closeWindow(), 800);
   });
 }
