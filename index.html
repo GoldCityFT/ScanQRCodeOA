@@ -89,6 +89,11 @@ p
         liff.login({ redirectUri: window.location.href });
         return;
       }
+      const profile = await liff.getProfile();
+      const idToken = liff.getIDToken();
+      
+      sessionStorage.setItem("uid", profile.userId || "");
+      sessionStorage.setItem("idt", idToken || "");
 
       // ทุกครั้งที่เข้าหน้านี้ = เริ่ม flow ใหม่
       startNewFlow();
