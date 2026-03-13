@@ -43,18 +43,29 @@
       box-sizing:border-box;
        }
     button{
-      margin-top:18px; 
-      width:100%; 
+      margin-top:18px;
+      width:100%;
       padding:12px;
       background:#00C300;
-      border:none; 
-      border-radius:6px; 
-      color:#fff; 
-      font-size:1rem; 
+      border:none;
+      border-radius:6px;
+      color:#fff;
+      font-size:1rem;
       cursor:pointer;
-      }
+      -webkit-appearance:none;
+      appearance:none;
+      -webkit-tap-highlight-color: transparent;
+      outline:none;
+      box-shadow:none;
+      transform:none;
+    }
+
+    button:focus,
+    button:active{
+      outline:none;
+      box-shadow:none;
+    }
     
-    button:hover{ background:#009f2b; }
     /* ซ่อน UI แต่ยังอยู่ใน DOM + ยังส่งค่า */
     .sr-only{
       position:absolute !important;
@@ -67,7 +78,6 @@
       white-space:nowrap !important;
       border:0 !important;
     }
-
     .provinceWrap{
     position:relative;
     width:100%;
@@ -149,8 +159,9 @@
     }
 
     #modalText{
-      font-size:clamp(24px, 6vw, 34px);
-      font-weight:800;
+      font-size:clamp(18px, 4vw, 24px);
+      font-weight:700;
+      line-height:1.45;
       margin:0 0 20px;
     }
 
@@ -368,6 +379,10 @@ provinceDropdown.addEventListener("click", (e) => {
 
   provinceInput.value = value;
   hideProvinceDropdown();
+  
+  // เคลียร์ focus กัน Android ค้าง state
+  provinceInput.blur();
+  document.activeElement?.blur?.();
 });
 
 document.addEventListener("click", (e) => {
