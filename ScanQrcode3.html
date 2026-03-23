@@ -253,6 +253,22 @@ async function stopCameraSafely(){
 }
 window.addEventListener("pagehide", () => stopCameraSafely());
 
+ function isValidTrackingCode(code){
+  code = (code || "").trim().toUpperCase();
+
+  // กันพวก URL / ลิงก์ / ข้อความที่ไม่ใช่รหัสพัสดุ
+  if(/^https?:\/\//i.test(code)) return false;
+  if(/^www\./i.test(code)) return false;
+
+  // อนุญาตเฉพาะ A-Z, 0-9 และขีด -
+  if(!/^[A-Z0-9-]+$/.test(code)) return false;
+
+  // ความยาวรหัสพัสดุแบบใช้งานจริง
+  if(code.length < 10 || code.length > 30) return false;
+
+  return true;
+}  
+
 let isNavigating = false;
 async function processCode(code){
   if(!guardFlowOrRestart()) return;
@@ -265,10 +281,10 @@ async function processCode(code){
     return;
   }
   //  กัน code สั้น/มั่วเกินไป
-   if(code.length < 10){
-     await showAlertPopup("❌ รหัสพัสดุไม่ถูกต้อง", false);
+   if(!isValidTrackingCode(code)){
+    await showAlertPopup("❌ กรุณาสแกน QRcode เฉพาะรหัสพัสดุ", false);
     return;
-   }
+  }
    
   // เซ็ตค่า "ล่าสุด" เสมอ
   sessionStorage.setItem('tracking', code);
