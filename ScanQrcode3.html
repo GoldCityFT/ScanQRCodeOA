@@ -282,7 +282,7 @@ async function processCode(code){
   }
   //  กัน code สั้น/มั่วเกินไป
    if(!isValidTrackingCode(code)){
-    await showAlertPopup("❌ กรุณาสแกน QRcode เฉพาะรหัสพัสดุ", false);
+    await showAlertPopup("❌ รหัสพัสดุไม่ถูกต้อง\nโปรดกรอกรหัสพัสดุ หรือสแกน QR Code บนกล่องพัสดุ", false);
     return;
   }
    
