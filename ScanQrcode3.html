@@ -287,7 +287,7 @@ async function processCode(code){
   }
   //  กัน code สั้น/มั่วเกินไป
    if(!isValidTrackingCode(code)){
-    await showAlertPopup("❌ เลขพัสดุไม่ถูกต้อง\nกรุณาสแกน Qrcode หน้ากล้องพัสดุ\nหรือกรอกเลขำสดุหน้ากล่อง", false);
+    await showAlertPopup("❌ เลขพัสดุไม่ถูกต้อง\nกรุณาสแกน Qrcode หน้ากล่องพัสดุ\nหรือกรอกเลขพัสดุหน้ากล่อง", false);
     return;
   }
    
