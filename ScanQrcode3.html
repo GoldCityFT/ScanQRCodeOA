@@ -227,8 +227,13 @@ let isScanned = false;
 let html5QrCode = null;
 let isStartingCamera = false;
 let isCameraRunning = false;
+let isPopupShowing = false;
 
 async function showAlertPopup(message, redirect = false){
+  if(isPopupShowing) return;
+   
+  isPopupShowing = true;
+   
   const popup = document.getElementById("popupAlert");
   const text = document.getElementById("popupAlertText");
   text.textContent = message;
@@ -236,11 +241,13 @@ async function showAlertPopup(message, redirect = false){
 
   setTimeout(async () => {
     popup.style.display = "none";
+    isPopupShowing = false;
+     
     if(redirect){
       await stopCameraSafely();
       window.location.replace("Form3.html");
     }
-  }, 2000);
+  }, 3000);
 }
 
 async function stopCameraSafely(){
