@@ -308,7 +308,11 @@ async function processCode(code){
   window.location.replace("Form3.html");
 }
 
-async function main(){
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+   
+async function main(retryCount = 1){
   if(!guardFlowOrRestart()) return;
   touchFlow();
 
@@ -330,8 +334,26 @@ async function main(){
     isCameraRunning = true;
   }catch(err){
     console.error("Camera start error:", err);
-    await showAlertPopup("❌ ไม่สามารถเปิดกล้องได้", false);
+    const msg = String(err?.message || err || "").toLowerCase();
+   
+      const shouldRetry =
+      retryCount > 0 &&
+      (
+        msg.includes("notreadable") ||
+        msg.includes("abort") ||
+        msg.includes("initial") ||
+        msg.includes("video source") ||
+        msg.includes("starting video") ||
+        msg.includes("notallowed") ||
+        msg.includes("permission")
+      );
     await stopCameraSafely();
+     if(shouldRetry){
+     await sleep(700);
+     isStartingCamera = false;
+     return main(retryCount - 1);
+   }
+    await showAlertPopup("❌ ไม่สามารถเปิดกล้องได้", false);
   }finally{
     isStartingCamera = false;
   }
@@ -350,6 +372,7 @@ window.addEventListener("pageshow", async (e) => {
 
   isScanned = false;
   await stopCameraSafely();
+  await sleep(500);
   await main();
 });
 
@@ -391,7 +414,8 @@ document.getElementById('btnBackToCamera').onclick = async () => {
   document.getElementById('message').style.display = 'block';
 
   await stopCameraSafely();
-  await main();
+   await sleep(500);
+   await main();
 };
 
 document.getElementById('manualSubmit').onclick = async () => {
